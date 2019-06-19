@@ -48,11 +48,28 @@
         </el-form-item>
       </el-tooltip>
 
+
+      <el-form-item prop="code">
+        <span class="svg-container">
+          <svg-icon icon-class="example" />
+        </span>
+        <el-input
+          ref="code"
+          v-model="loginForm.code"
+          name="code"
+          type="text"
+          tabindex="1"
+          autocomplete="on"
+        />
+        <el-img alt="验证码" src="../assets/404_images/404.png" onclick=""/>
+      </el-form-item>
+
+
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
       </el-button>
 
-      <div style="position:relative">
+      <!--<div style="position:relative">
         <div class="tips">
           <span>{{ $t('login.userName') }} : admin</span>
           <span>{{ $t('login.password') }} : {{ $t('login.any') }}</span>
@@ -67,7 +84,7 @@
         <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
           {{ $t('login.thirdparty') }}
         </el-button>
-      </div>
+      </div>-->
     </el-form>
 
     <el-dialog :title="$t('login.thirdparty')" :visible.sync="showDialog">
@@ -91,14 +108,14 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入用户名!'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能小于6位数!'))
       } else {
         callback()
       }
@@ -106,7 +123,8 @@ export default {
     return {
       loginForm: {
         userName: 'admin',
-        password: '111111'
+        password: '111111',
+        code: ''
       },
       loginRules: {
         userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
