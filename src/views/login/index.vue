@@ -40,7 +40,6 @@
             autocomplete="on"
             @keyup.native="checkCapslock"
             @blur="capsTooltip = false"
-            @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
@@ -48,22 +47,25 @@
         </el-form-item>
       </el-tooltip>
 
-
-      <el-form-item prop="code">
+      <el-form-item prop="yzm">
         <span class="svg-container">
           <svg-icon icon-class="example" />
         </span>
         <el-input
-          ref="code"
-          v-model="loginForm.code"
-          name="code"
+          id="yzm"
+          ref="yzm"
+          name="yzm"
+          :placeholder="$t('login.yzm')"
+          v-model="loginForm.yzm"
           type="text"
           tabindex="1"
           autocomplete="on"
+          @keyup.enter.native="handleLogin"
         />
-        <el-img alt="验证码" src="../assets/404_images/404.png" onclick=""/>
+        <span class="yzmImg">
+            <img alt="验证码" id="yzmImg" ref="yzmImg" src="" @click="replaceCode()"/>
+        </span>
       </el-form-item>
-
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">
         {{ $t('login.logIn') }}
@@ -101,6 +103,7 @@
 import { validUsername } from '@/utils/validate'
 import LangSelect from '@/components/LangSelect'
 import SocialSign from './components/SocialSignin'
+import { createImageCode } from '@/api/user'
 
 export default {
   name: 'Login',
@@ -120,15 +123,28 @@ export default {
         callback()
       }
     }
+    const validateYzm = (rule, value, callback) => {
+      if (value.length === 0) {
+        callback(new Error('请输入验证码!'))
+        return
+      }else if(value.length !== 4){
+        callback(new Error('请输入正确的验证码!'))
+        return
+      } else {
+        callback()
+      }
+    }
+
     return {
       loginForm: {
-        userName: 'admin',
-        password: '111111',
-        code: ''
+        userName: '',
+        password: '',
+        yzm: '',
       },
       loginRules: {
         userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        yzm: [{ required: true, trigger: 'blur', validator: validateYzm }]
       },
       passwordType: 'password',
       capsTooltip: false,
@@ -159,6 +175,9 @@ export default {
     } else if (this.loginForm.password === '') {
       this.$refs.password.focus()
     }
+    this.$message.success('欢迎登陆水务管理系统!')
+    this.replaceCode()
+
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -211,6 +230,15 @@ export default {
         }
         return acc
       }, {})
+    },
+    replaceCode() {
+      createImageCode().then(data => {
+        const img = 'data:image/jpeg;base64,'+btoa(
+          new Uint8Array(data)
+            .reduce((data,byte) => data + String.fromCharCode(byte),'')
+        )
+        this.$refs.yzmImg.src = img;
+      })
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
@@ -363,5 +391,18 @@ $light_gray:#eee;
       display: none;
     }
   }
+}
+
+#yzm{
+  width:200px;
+}
+.yzmImg{
+  position: absolute;
+  right: 1px;
+  cursor: pointer;
+
+}
+#yzmImg{
+  border-radius:5px;
 }
 </style>
