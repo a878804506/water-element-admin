@@ -58,7 +58,7 @@
           :placeholder="$t('login.yzm')"
           v-model="loginForm.yzm"
           type="text"
-          tabindex="1"
+          tabindex="3"
           autocomplete="on"
           @keyup.enter.native="handleLogin"
         />
@@ -137,8 +137,8 @@ export default {
 
     return {
       loginForm: {
-        userName: '',
-        password: '',
+        userName: 'admin',
+        password: '111111',
         yzm: '',
       },
       loginRules: {
@@ -210,11 +210,20 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+            .then(response => {
+              if(response.status === 200){
+                this.$message.success(response.message)
+                console.log('跳转链接======>'+this.redirect)
+                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+              }else{
+                this.$message.error(response.message)
+                this.replaceCode() //刷新验证码
+                this.loginForm.yzm = ''
+              }
               this.loading = false
             })
-            .catch(() => {
+            .catch(error => {
+              console.log('catch'+error);
               this.loading = false
             })
         } else {
