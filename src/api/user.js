@@ -10,10 +10,10 @@ export function login(data) {
   })
 }
 
-export function getInfo(/*token*/) {
+export function getInfo(/* token */) {
   return request({
     url: '/getInfo',
-    method: 'get',
+    method: 'get'
     // params: { token }
   })
 }
@@ -30,6 +30,6 @@ export function createImageCode() {
   return request({
     url: '/createImageCode',
     method: 'get',
-    responseType: 'arraybuffer'  //返回二进制流数据
+    responseType: 'arraybuffer' // 返回二进制流数据
   })
 }
