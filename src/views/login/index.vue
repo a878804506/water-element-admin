@@ -54,16 +54,16 @@
         <el-input
           id="yzm"
           ref="yzm"
+          v-model="loginForm.yzm"
           name="yzm"
           :placeholder="$t('login.yzm')"
-          v-model="loginForm.yzm"
           type="text"
           tabindex="3"
           autocomplete="on"
           @keyup.enter.native="handleLogin"
         />
         <span class="yzmImg">
-            <img alt="验证码" id="yzmImg" ref="yzmImg" src="" @click="replaceCode()"/>
+          <img id="yzmImg" ref="yzmImg" alt="验证码" src="" @click="replaceCode()">
         </span>
       </el-form-item>
 
@@ -127,7 +127,7 @@ export default {
       if (value.length === 0) {
         callback(new Error('请输入验证码!'))
         return
-      }else if(value.length !== 4){
+      } else if (value.length !== 4) {
         callback(new Error('请输入正确的验证码!'))
         return
       } else {
@@ -139,7 +139,7 @@ export default {
       loginForm: {
         userName: 'admin',
         password: '111111',
-        yzm: '',
+        yzm: ''
       },
       loginRules: {
         userName: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -177,7 +177,6 @@ export default {
     }
     this.$message.success('欢迎登陆水务管理系统!')
     this.replaceCode()
-
   },
   destroyed() {
     // window.removeEventListener('storage', this.afterQRScan)
@@ -211,19 +210,19 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
             .then(response => {
-              if(response.status === 200){
+              if (response.status === 200) {
                 this.$message.success(response.message)
-                console.log('跳转链接======>'+this.redirect)
+                // console.log('跳转链接======>' + this.redirect)
                 this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              }else{
+              } else {
                 this.$message.error(response.message)
-                this.replaceCode() //刷新验证码
+                this.replaceCode() // 刷新验证码
                 this.loginForm.yzm = ''
               }
               this.loading = false
             })
             .catch(error => {
-              console.log('catch'+error);
+              console.log('catch' + error)
               this.loading = false
             })
         } else {
@@ -242,11 +241,11 @@ export default {
     },
     replaceCode() {
       createImageCode().then(data => {
-        const img = 'data:image/jpeg;base64,'+btoa(
+        const img = 'data:image/jpeg;base64,' + btoa(
           new Uint8Array(data)
-            .reduce((data,byte) => data + String.fromCharCode(byte),'')
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
         )
-        this.$refs.yzmImg.src = img;
+        this.$refs.yzmImg.src = img
       })
     }
     // afterQRScan() {
